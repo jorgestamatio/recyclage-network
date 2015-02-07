@@ -1,0 +1,175 @@
+<html>
+<head>
+<style type="text/css">
+  body{
+    background: #111;
+  }
+  #container {
+    max-width: 100%;
+    height: 100%;
+    margin: auto;
+  }
+</style>
+</head>
+<body>
+<a class="download" href="#">Download</a>
+<div id="container"></div>
+<script src="sigma.min.js"></script>
+<!-- <script src="plugins/sigma.parsers.json.min.js"></script> -->
+<script src="data.js"></script>
+<script>
+  
+  function makeJson () {
+      var nodesArr = {
+          nodes : [],
+          edges : []
+      };
+      var minX = 0;
+      var maxX = 1200;
+      var minY = 0;
+      var maxY = 700;
+      var L = 15;
+      var N = 100;
+
+      for (var i = 0; i < nodes.length; i++) {
+
+          size = edges.reduce(function(n, edge) {
+              // return n + (edge.target == nodes[i]);
+              return n + (edge.target == nodes[i]) + (edge.source == nodes[i]);
+          }, 0);
+
+          nodesArr.nodes.push({
+              id: nodes[i],
+              label: decodeURIComponent(nodes[i]) + ' - ' + size,
+              // x: i % L + size/10,
+              // y: Math.floor(i / L)+Math.floor(Math.random()),
+              // x: Math.floor(Math.random() * (maxX - minX + 1)) + minX,
+              // y: Math.floor(Math.random() * (maxY - minY + 1)) + minY,
+              // x: i * Math.cos(Math.PI * 2 * i / nodes.length - Math.PI / 2),
+              // y: i * Math.sin(Math.PI * 2 * i / nodes.length - Math.PI / 2),
+              x: L * Math.cos(Math.PI * 2 * i / N - Math.PI / 2),
+              y: L * Math.sin(Math.PI * 2 * i / N - Math.PI / 2),
+              size: size+11,
+              color: '#' + (
+                          Math.floor(Math.random() * 16777215).toString(16) + '000000'
+                      ).substr(0, 6)
+          });
+
+      }
+
+      for (var i = 0; i < edges.length; i++) {
+
+          nodesArr.edges.push({
+              id: "edge"+i,
+              source: edges[i].source,
+              target: edges[i].target,
+              type: 'curve'
+          });
+      }
+
+
+
+
+      return nodesArr;
+  }
+
+  var data = makeJson();
+  
+  // Add a method to the graph model that returns an
+  // object with every neighbors of a node inside:
+  sigma.classes.graph.addMethod('neighbors', function(nodeId) {
+    var k,
+        neighbors = {},
+        index = this.allNeighborsIndex[nodeId] || {};
+
+    for (k in index)
+      neighbors[k] = this.nodesIndex[k];
+
+    return neighbors;
+  });
+
+
+  s = new sigma({ 
+          graph: data,
+          container: 'container',
+          settings: {
+              defaultNodeColor: '#d7da6d',
+              edgeColor: 'default',
+              font: "helvetica",
+              defaultLabelColor: '#fff',
+              defaultEdgeColor: '#4b7270',
+              defaultEdgeHoverColor: '#C34',
+              labelThreshold: 2,
+              labelSizeRatio: 3,
+              labelSize: 'proportional',
+              labelHoverShadow: 'node',
+              labelHoverShadowColor: "#ccc"
+          }
+  });
+
+
+
+
+        // We first need to save the original colors of our
+        // nodes and edges, like this:
+        s.graph.nodes().forEach(function(n) {
+          n.originalColor = n.color;
+        });
+        s.graph.edges().forEach(function(e) {
+          e.originalColor = e.color;
+        });
+
+        // When a node is clicked, we check for each node
+        // if it is a neighbor of the clicked one. If not,
+        // we set its color as grey, and else, it takes its
+        // original color.
+        // We do the same for the edges, and we only keep
+        // edges that have both extremities colored.
+        s.bind('clickNode', function(e) {
+          var nodeId = e.data.node.id,
+              toKeep = s.graph.neighbors(nodeId);
+          toKeep[nodeId] = e.data.node;
+
+          s.graph.nodes().forEach(function(n) {
+            if (toKeep[n.id])
+              n.color = n.originalColor;
+            else
+              n.color = '#ccc';
+          });
+
+          s.graph.edges().forEach(function(e) {
+            if (toKeep[e.source] && toKeep[e.target])
+              e.color = e.originalColor;
+            else
+              e.color = '#111';
+          });
+
+          // Since the data has been modified, we need to
+          // call the refresh method to make the colors
+          // update effective.
+          s.refresh();
+        });
+
+        // When the stage is clicked, we just color each
+        // node and edge with its original color.
+        s.bind('clickStage', function(e) {
+          s.graph.nodes().forEach(function(n) {
+            n.color = n.originalColor;
+          });
+
+          s.graph.edges().forEach(function(e) {
+            e.color = e.originalColor;
+          });
+
+          // Same as in the previous event:
+          s.refresh();
+        });
+
+
+        var tmp_canvas = document.getElementById('canvas');
+        var dataURL = tmp_canvas.toDataURL("image/png");
+        $('.download').attr('href', dataURL);
+   
+</script>
+</body>
+</html>
