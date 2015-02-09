@@ -30,9 +30,13 @@
       var minX = 0;
       var maxX = 1000;
       var minY = 0;
-      var maxY = 1800;
-      var L = 12;
-      var N = 10;
+      var maxY = 1000;
+      // circle
+      var L = 200;
+      var N = 120;
+      // ellipse
+      // var L = 12;
+      // var N = 10;
       centerX = maxX / 2;
       centerY = maxY / 2;
       radiusX = maxX / 2;
@@ -56,11 +60,11 @@
               // x: i * Math.cos(Math.PI * 2 * i / nodes.length - Math.PI / 2),
               // y: i * Math.sin(Math.PI * 2 * i / nodes.length - Math.PI / 2),
               // circle
-              // x: L * Math.cos(Math.PI * 2 * i / N - Math.PI / 2), 
-              // y: L * Math.sin(Math.PI * 2 * i / N - Math.PI / 2),
+              x: L * Math.cos(Math.PI * 2 * i / N - Math.PI / 2), 
+              y: L * Math.sin(Math.PI * 2 * i / N - Math.PI / 2),
               // ellipse
-              x: L * centerX - (radiusX * Math.sin(i/5)) * Math.sin(rotationAngle[step] * Math.PI) + (radiusY * Math.cos(i/5)) * Math.cos(rotationAngle[step] * Math.PI),
-              y: L * centerY + (radiusY * Math.cos(i/5)) * Math.sin(rotationAngle[step] * Math.PI) + (radiusX * Math.sin(i/5)) * Math.cos(rotationAngle[step] * Math.PI),
+              // x: L * centerX - (radiusX * Math.sin(i/5)) * Math.sin(rotationAngle[step] * Math.PI) + (radiusY * Math.cos(i/5)) * Math.cos(rotationAngle[step] * Math.PI),
+              // y: L * centerY + (radiusY * Math.cos(i/5)) * Math.sin(rotationAngle[step] * Math.PI) + (radiusX * Math.sin(i/5)) * Math.cos(rotationAngle[step] * Math.PI),
               size: size+11,
               color: '#' + (
                           Math.floor(Math.random() * 16777215).toString(16) + '000000'
@@ -136,7 +140,7 @@
               defaultEdgeColor: '#4b7270',
               defaultEdgeHoverColor: '#fff',
               labelThreshold: 2,
-              labelSizeRatio: 5,
+              labelSizeRatio: 4,
               labelSize: 'proportional',
               labelHoverShadow: 'node',
               labelHoverShadowColor: "#ccc",
